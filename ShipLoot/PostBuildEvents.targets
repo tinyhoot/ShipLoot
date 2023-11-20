@@ -7,7 +7,7 @@
         <GameDirTargetsFullPath>$(ProjectDir)$(GameDirTargetsFile)</GameDirTargetsFullPath>
     </PropertyGroup>
     <ItemGroup>
-        <ThunderStoreItems Include="..\icon.jpg" />
+        <ThunderStoreItems Include="..\icon.png" />
         <ThunderStoreItems Include="..\manifest.json" />
         <ThunderStoreItems Include="..\README.md" />
     </ItemGroup>
