@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- Defining the file names of project-specific data we'll load later. -->
+    <PropertyGroup>
+        <AssetTargetsFile>Assets.targets</AssetTargetsFile>
+        <GameDirTargetsFile>GameDirectory.targets</GameDirTargetsFile>
+        <GameDirTargetsFullPath>$(ProjectDir)$(GameDirTargetsFile)</GameDirTargetsFullPath>
+    </PropertyGroup>
+
+    <!-- Ensure the user (you!) has actually set everything up properly. -->
+    <Target Name="EnsureGameDirectoryDefined" BeforeTargets="PrepareForBuild">
+        <PropertyGroup>
+            <GameDirError>This project requires you to define your own game installation directory in a separate $(GameDirTargetsFile) file. Create this file in the same folder as the $(MSBuildProjectFile) and add a 'GameDirectory' MSBuild property to it to proceed. There is an example file in $(MSBuildThisFileDirectory) you can copy and adjust.</GameDirError>
+        </PropertyGroup>
+        <Error Condition="!Exists('$(GameDirTargetsFullPath)')" Text="$(GameDirError)" />
+    </Target>
+    
+    <!-- Import extra information from project-specific files. -->
+    <Import Project="$(ProjectDir)$(AssetTargetsFile)" Condition="Exists('$(ProjectDir)$(AssetTargetsFile)')"/>
+    <!-- This import isn't actually optional, but making it conditional allows the user-friendly error task above to run. -->
+    <Import Project="$(GameDirTargetsFullPath)" Condition="Exists('$(GameDirTargetsFullPath)')"/>
+    <!-- Ensure that the defined game directory path is valid. -->
+    <Target Name="EnsureGameDirectoryExists" AfterTargets="EnsureGameDirectoryDefined">
+        <Error Condition="!Exists('$(GameDirectory)')" Text="$(GameDirError)" />
+    </Target>
+    <PropertyGroup>
+        <!-- The mod directory to install our mod to. -->
+        <ModDirectory>$(GameDirectory)\BepInEx\plugins\$(AssemblyName)</ModDirectory>
+        <!-- Where to create the temporary directory for creating the release zip files. -->
+        <TempZipDir>$(OutputPath)ZipMeUp</TempZipDir>
+        <!-- The internal structure of the zip file. -->
+        <ZipStructure>plugins\$(AssemblyName)</ZipStructure>
+    </PropertyGroup>
+
+    <!-- Copy newly built files to the game directory. -->
+    <Target Name="CopyToGameFolder" AfterTargets="Build">
+        <Message Importance="high" Text="Copying files to game directory." />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModDirectory)" />
+        <Copy SourceFiles="@(Assets)" DestinationFolder="$(ModDirectory)\%(Assets.RelativeDir)"/>
+    </Target>
+
+    <!-- Find the current version of the assembly. -->
+    <Target Name="GetAssemblyVersion" AfterTargets="Build" Condition="$(Configuration.Contains('Release'))">
+        <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+            <Output TaskParameter="Assemblies" ItemName="AssemblyIdentity" />
+        </GetAssemblyIdentity>
+        <PropertyGroup>
+            <AssemblyVersion>%(AssemblyIdentity.Version)</AssemblyVersion>
+        </PropertyGroup>
+        <Message Importance="high" Text="Assembly Version: $(AssemblyVersion)" />
+    </Target>
+
+    <!-- Automatically create the zip file, ready for distribution. -->
+    <Target Name="PrepareZip" AfterTargets="Build" Condition="$(Configuration.Contains('Release'))">
+        <Message Importance="normal" Text="Copying files to temporary directory." />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(TempZipDir)\$(ZipStructure)" />
+        <Copy SourceFiles="@(Assets)" DestinationFolder="$(TempZipDir)\$(ZipStructure)\%(Assets.RelativeDir)" />
+    </Target>
+    <Target Name="CreateZip" AfterTargets="PrepareZip" Condition="$(Configuration.Contains('Release'))">
+        <Message Importance="high" Text="Zipping project for distribution." />
+        <PropertyGroup>
+            <ZipFile>$(OutputPath)$(AssemblyName)-$(AssemblyVersion).zip</ZipFile>
+        </PropertyGroup>
+        <ZipDirectory DestinationFile="$(ZipFile)" SourceDirectory="$(TempZipDir)" Overwrite="true" />
+    </Target>
+    <Target Name="Cleanup" AfterTargets="CreateZip" Condition="'$(Configuration)' == 'Release'">
+        <Message Importance="normal" Text="Cleaning up." />
+        <RemoveDir Directories="$(TempZipDir)" />
+    </Target>
+    <Target Name="CopyToZipsFolder" AfterTargets="Cleanup" Condition="$(Configuration.Contains('Release')) And '$(ReleaseZipDirectory)' != ''">
+        <Message Importance="normal" Text="Moving finished zip file to zip directory." />
+        <Copy SourceFiles="$(ZipFile)" DestinationFolder="$(ReleaseZipDirectory)" />
+    </Target>
+</Project>

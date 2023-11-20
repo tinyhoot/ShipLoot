@@ -1,0 +1,8 @@
+/.idea/
+/.vs/
+packages
+Releases
+**/bin
+**/obj
+**/GameDirectory.targets
+ShipLoot.sln.DotSettings.user
