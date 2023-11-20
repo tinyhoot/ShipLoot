@@ -70,19 +70,19 @@
         <Reference Include="System.Data" />
         <Reference Include="System.Xml" />
         <Reference Include="Unity.InputSystem">
-          <HintPath>..\..\Dependencies\Unity.InputSystem.dll</HintPath>
+          <HintPath>..\Dependencies\Unity.InputSystem.dll</HintPath>
         </Reference>
         <Reference Include="Unity.Netcode.Components">
-          <HintPath>..\..\Dependencies\Unity.Netcode.Components.dll</HintPath>
+          <HintPath>..\Dependencies\Unity.Netcode.Components.dll</HintPath>
         </Reference>
         <Reference Include="Unity.Netcode.Runtime">
-          <HintPath>..\..\Dependencies\Unity.Netcode.Runtime.dll</HintPath>
+          <HintPath>..\Dependencies\Unity.Netcode.Runtime.dll</HintPath>
         </Reference>
         <Reference Include="Unity.Networking.Transport">
-          <HintPath>..\..\Dependencies\Unity.Networking.Transport.dll</HintPath>
+          <HintPath>..\Dependencies\Unity.Networking.Transport.dll</HintPath>
         </Reference>
         <Reference Include="Unity.TextMeshPro">
-          <HintPath>..\..\Dependencies\Unity.TextMeshPro.dll</HintPath>
+          <HintPath>..\Dependencies\Unity.TextMeshPro.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
             <HintPath>..\packages\UnityEngine.Modules.2022.3.9\lib\net45\UnityEngine.dll</HintPath>
