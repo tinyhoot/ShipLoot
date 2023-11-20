@@ -6,6 +6,11 @@
         <GameDirTargetsFile>GameDirectory.targets</GameDirTargetsFile>
         <GameDirTargetsFullPath>$(ProjectDir)$(GameDirTargetsFile)</GameDirTargetsFullPath>
     </PropertyGroup>
+    <ItemGroup>
+        <ThunderStoreItems Include="..\icon.jpg" />
+        <ThunderStoreItems Include="..\manifest.json" />
+        <ThunderStoreItems Include="..\README.md" />
+    </ItemGroup>
 
     <!-- Ensure the user (you!) has actually set everything up properly. -->
     <Target Name="EnsureGameDirectoryDefined" BeforeTargets="PrepareForBuild">
@@ -55,6 +60,7 @@
         <Message Importance="normal" Text="Copying files to temporary directory." />
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(TempZipDir)\$(ZipStructure)" />
         <Copy SourceFiles="@(Assets)" DestinationFolder="$(TempZipDir)\$(ZipStructure)\%(Assets.RelativeDir)" />
+        <Copy SourceFiles="@(ThunderStoreItems)" DestinationFolder="$(TempZipDir)\$(ThunderStoreItems)" />
     </Target>
     <Target Name="CreateZip" AfterTargets="PrepareZip" Condition="$(Configuration.Contains('Release'))">
         <Message Importance="high" Text="Zipping project for distribution." />
