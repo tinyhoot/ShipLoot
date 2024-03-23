@@ -1,6 +1,6 @@
 {
   "name": "ShipLoot",
-  "version_number": "1.0.0",
+  "version_number": "1.1.0",
   "website_url": "https://github.com/tinyhoot/ShipLoot",
   "description": "Reliably shows the total value of all scrap in your ship.",
   "dependencies": [
