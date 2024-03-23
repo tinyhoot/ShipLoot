@@ -11,6 +11,7 @@ namespace ShipLoot.Patches
     [HarmonyPatch]
     internal class HudManagerPatcher
     {
+        private static GameObject _ship;
         private static GameObject _totalCounter;
         private static TextMeshProUGUI _textMesh;
         private static float _displayTimeLeft;
@@ -28,6 +29,8 @@ namespace ShipLoot.Patches
             if (!StartOfRound.Instance.inShipPhase && !GameNetworkManager.Instance.localPlayerController.isInHangarShipRoom)
                 return;
             
+            if (!_ship)
+                _ship = GameObject.Find("/Environment/HangarShip");
             if (!_totalCounter)
                 CopyValueCounter();
             float value = CalculateLootValue();
@@ -55,10 +58,9 @@ namespace ShipLoot.Patches
         /// <returns>The total scrap value.</returns>
         private static float CalculateLootValue()
         {
-            GameObject ship = GameObject.Find("/Environment/HangarShip");
             // Get all objects that can be picked up from inside the ship. Also remove items which technically have
             // scrap value but don't actually add to your quota.
-            var loot = ship.GetComponentsInChildren<GrabbableObject>()
+            var loot = _ship.GetComponentsInChildren<GrabbableObject>()
                 .Where(obj => obj.itemProperties.isScrap && !(obj is RagdollGrabbableObject))
                 .ToList();
             ShipLoot.Log.LogDebug("Calculating total ship scrap value.");
