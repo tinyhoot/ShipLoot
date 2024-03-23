@@ -9,6 +9,7 @@
     <ItemGroup>
         <ThunderStoreItems Include="..\icon.png" />
         <ThunderStoreItems Include="..\manifest.json" />
+        <ThunderStoreItems Include="..\CHANGELOG.md" />
         <ThunderStoreItems Include="..\README.md" />
     </ItemGroup>
 
