@@ -13,21 +13,17 @@
     </ItemGroup>
 
     <!-- Ensure the user (you!) has actually set everything up properly. -->
-    <Target Name="EnsureGameDirectoryDefined" BeforeTargets="PrepareForBuild">
+    <Target Name="EnsureGameDirectoryDefined" BeforeTargets="PrepareForBuild" Condition="!Exists('$(GameDirTargetsFullPath)')">
         <PropertyGroup>
-            <GameDirError>This project requires you to define your own game installation directory in a separate $(GameDirTargetsFile) file. Create this file in the same folder as the $(MSBuildProjectFile) and add a 'GameDirectory' MSBuild property to it to proceed. There is an example file in $(MSBuildThisFileDirectory) you can copy and adjust.</GameDirError>
+            <GameDirError>No game directory was defined in a $(GameDirTargetsFile) file. Skipping copy to game directory.
+                If you want to enable this feature, create this file in the same folder as the $(MSBuildProjectFile) and add a 'GameDirectory' MSBuild property to it to proceed. There is an example file in $(MSBuildThisFileDirectory) you can copy and adjust.</GameDirError>
         </PropertyGroup>
-        <Error Condition="!Exists('$(GameDirTargetsFullPath)')" Text="$(GameDirError)" />
+        <Message Importance="high" Text="$(GameDirError)" />
     </Target>
     
     <!-- Import extra information from project-specific files. -->
     <Import Project="$(ProjectDir)$(AssetTargetsFile)" Condition="Exists('$(ProjectDir)$(AssetTargetsFile)')"/>
-    <!-- This import isn't actually optional, but making it conditional allows the user-friendly error task above to run. -->
     <Import Project="$(GameDirTargetsFullPath)" Condition="Exists('$(GameDirTargetsFullPath)')"/>
-    <!-- Ensure that the defined game directory path is valid. -->
-    <Target Name="EnsureGameDirectoryExists" AfterTargets="EnsureGameDirectoryDefined">
-        <Error Condition="!Exists('$(GameDirectory)')" Text="$(GameDirError)" />
-    </Target>
     <PropertyGroup>
         <!-- The mod directory to install our mod to. -->
         <ModDirectory>$(GameDirectory)\BepInEx\plugins\$(AssemblyName)</ModDirectory>
@@ -38,7 +34,7 @@
     </PropertyGroup>
 
     <!-- Copy newly built files to the game directory. -->
-    <Target Name="CopyToGameFolder" AfterTargets="Build">
+    <Target Name="CopyToGameFolder" AfterTargets="Build" Condition="Exists('$(GameDirTargetsFullPath)')">
         <Message Importance="high" Text="Copying files to game directory." />
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModDirectory)" />
         <Copy SourceFiles="@(Assets)" DestinationFolder="$(ModDirectory)\%(Assets.RelativeDir)"/>
