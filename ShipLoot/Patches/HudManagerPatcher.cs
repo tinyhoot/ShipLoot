@@ -15,7 +15,6 @@ namespace ShipLoot.Patches
         private static GameObject _totalCounter;
         private static TextMeshProUGUI _textMesh;
         private static float _displayTimeLeft;
-        private const float DisplayTime = 5f;
         
         [HarmonyPrefix]
         [HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
@@ -35,7 +34,7 @@ namespace ShipLoot.Patches
                 CopyValueCounter();
             float value = CalculateLootValue();
             _textMesh.text = $"SHIP: ${value:F0}";
-            _displayTimeLeft = DisplayTime;
+            _displayTimeLeft = ShipLoot.Config.DisplayTime.Value;
             if (!_totalCounter.activeSelf)
                 GameNetworkManager.Instance.StartCoroutine(ShipLootCoroutine());
         }
