@@ -59,7 +59,8 @@ namespace ShipLoot.Patches
             // Get all objects that can be picked up from inside the ship. Also remove items which technically have
             // scrap value but don't actually add to your quota.
             var loot = ship.GetComponentsInChildren<GrabbableObject>()
-                .Where(obj => obj.name != "ClipboardManual" && obj.name != "StickyNoteItem").ToList();
+                .Where(obj => obj.itemProperties.isScrap && !(obj is RagdollGrabbableObject))
+                .ToList();
             ShipLoot.Log.LogDebug("Calculating total ship scrap value.");
             loot.Do(scrap => ShipLoot.Log.LogDebug($"{scrap.name} - ${scrap.scrapValue}"));
             return loot.Sum(scrap => scrap.scrapValue);
